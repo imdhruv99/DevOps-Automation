@@ -1,0 +1,299 @@
+h2. Container Technology: Docker
+---- - Docker is a platform for building, running and shipping applications in consistent manner so it can run on any machine whether it's Linux, windows or any other operating system.
+ - Docker allows developers to separate code (applications) from infrastructure, allowing for a single host to run many containers.
+ - At high level it runs REST Api client-server process which called as "Docker Engine" or "Docker Daemon"
+
+h3. *Docker Architecture*
+ - Docker uses client-server architectures and it divided in four parts.
+
+*Docker Daemon*
+ - It manages API request, images, containers, network volumes. It can communicate with other daemon to manage the services.
+
+*Docker Client*
+ - It's what we uses in our workstation. Through this we can run docker commands and send requests to Docker Daemon.
+
+*Docker Registries*
+ - In simple word docker registry store the docker images. Docker Hub is used to store docker images.
+
+*Docker Objects*
+ - When we use the docker we create objects such as images, containers, volumes etc...
+
+*Docker vs Virtual machine*
+ - A Dockerized application is just a process that runs on your system. It doesn’t require running a Hypervisor (such as VMWare or VirtualBox), which means there’s no guest operating system to lug around.
+ - Both have it's own pros and cons.
+ - Docker does not do pure virtualisation, we can not run windows container on linux machine, but we can install virtual machine and run windows os.
+
+h3. *Docker Commands*
+
+*docker --version*
+ - Used to get installed version of docker
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker --version
+Docker version 19.03.12, build 48a66213fe
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+
+*docker pull <image name>*
+ - It will pull the image from docker repository(docker hub)
+
+*docker images*
+ - It will lists all the images
+
+*docker rmi <image id>*
+ - It will delete docker image using image id.
+ - "-f" flag is used to remove image force fully.
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker pull python           
+Using default tag: latest
+latest: Pulling from library/python
+d960726af2be: Pull complete 
+e8d62473a22d: Pull complete 
+8962bc0fad55: Pull complete 
+65d943ee54c1: Pull complete 
+532f6f723709: Pull complete 
+1334e0fe2851: Pull complete 
+062ada600c9e: Pull complete 
+aec2e3a89371: Pull complete 
+5c6566073cac: Pull complete 
+Digest: sha256:f265c5096aa52bdd478d2a5ed097727f51721fda20686523ab1b3038cc7d6417
+Status: Downloaded newer image for python:latest
+docker.io/library/python:latest
+
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker images
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+python                    latest              a6a0779c5fb2        21 hours ago        886MB
+gowebapp                  1.0.0               945d28733acf        2 days ago          15.1MB
+gowebapp                  latest              945d28733acf        2 days ago          15.1MB
+visualsofdhruv/gowebapp   1.0.0               945d28733acf        2 days ago          15.1MB
+<none>                    <none>              0bdb7a9b7463        2 days ago          392MB
+<none>                    <none>              3d00a6c9eb0c        2 days ago          15.1MB
+golang                    1.16.3-alpine       270727b8fd0f        3 weeks ago         301MB
+golang                    1.16.3              d5dc529b0ee7        3 weeks ago         862MB
+alpine                    latest              6dbb9cc54074        4 weeks ago         5.61MB
+
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker rmi -f 0bdb7a9b7463
+Deleted: sha256:0bdb7a9b746371e5865abf42187bd8376df3396c24e2942186b757a98cc35634
+Deleted: sha256:889b9acce314fabba9b4d3662392ee4acfcccce9358223edc2c6de6ab019ee43
+Deleted: sha256:018870c223cf8875e61848d292e0264ab47b89ff7050c2dbc33c52516b72e7a7
+Deleted: sha256:a334c463accf29d3d4749fdf65741eb84b936d8f69d80851f10a047de8e0da26
+Deleted: sha256:c567f2607b68de139115a62efdc63770b18d1cca4c8c36be5812a1e4de84cb73
+Deleted: sha256:9a504784eee13c7c4260864ebd312076983a7b9799b66e285d34e6b00ef80859
+Deleted: sha256:2d26a1650fc6169a9752d4a814f24a30d953046ad1b5a521d915353f1fd9685f
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+*docker ps -a*
+ - It shows all the running and exited containers
+
+*docker rm <container id>*
+ - It is use to remove container using container id
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                  PORTS               NAMES
+d97c6a3d77a5        76f60a39fca8        "/bin/sh -c 'go buil…"   2 days ago          Exited (1) 2 days ago                       musing_snyder
+c7cd8c09de31        372b4eb8ce32        "/bin/sh -c 'go mod …"   2 days ago          Exited (1) 2 days ago                       brave_goodall
+b1302bf95d14        b592d23e53e6        "/bin/sh -c 'go mod …"   2 days ago          Exited (1) 2 days ago                       friendly_hofstadter
+68687339af95        b592d23e53e6        "/bin/sh -c 'go mod …"   2 days ago          Exited (1) 2 days ago                       epic_ardinghelli
+cb8bc739cf21        b592d23e53e6        "/bin/sh -c 'go mod …"   2 days ago          Exited (1) 2 days ago                       laughing_agnesi
+2bd9b54f9ddb        7bf749b6eb86        "/bin/sh -c 'go mod …"   2 days ago          Exited (1) 2 days ago                       vigilant_chebyshev
+003dde6b1377        d26b74ff042b        "/bin/sh -c 'go buil…"   2 days ago          Exited (1) 2 days ago                       clever_tu
+fc3133f101dd        0ab389c6f92f        "/bin/sh -c 'go buil…"   2 days ago          Exited (1) 2 days ago                       tender_lichterman
+5d2e45c2781f        4a0658f18da0        "/bin/sh -c 'go buil…"   2 days ago          Exited (1) 2 days ago                       intelligent_kepler
+4ab0369ea81c        7d917d1e1965        "/bin/sh -c 'go buil…"   2 days ago          Exited (1) 2 days ago                       xenodochial_hopper
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker rm d97c6a3d77a5
+d97c6a3d77a5
+{code}
+*docker system*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker system
+
+Usage:	docker system COMMAND
+
+Manage Docker
+
+Commands:
+  df          Show docker disk usage
+  events      Get real time events from the server
+  info        Display system-wide information
+  prune       Remove unused data
+
+Run 'docker system COMMAND --help' for more information on a command.
+{code}
+ - Below command will remove all dangling, unused images, containers, volumes and networks
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker system prune  
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all dangling images
+  - all dangling build cache
+
+Are you sure you want to continue? [y/N] y
+Deleted Containers:
+b1302bf95d1413d71ed72f622021454e75c2dce2303340dc8047e9d20331d23b
+68687339af95e7381b9d229aa9fe16951a2ebe423ec9474dd1485d19970345e2
+cb8bc739cf210494b4c49b121cc091ea6e6a7e7a65fd1e41c9c4f7b4606b1b53
+2bd9b54f9ddb81bb070489ec869c9b454481dcb0e7636379c4723ecd4f3f5473
+003dde6b13770fefc7664a50ab5ce38ddd8cb51987df78e822aef2564bef9ff2
+fc3133f101dd84825d1765dad15406c5abf9471e4e62276259b3720bdda525cb
+5d2e45c2781f76f80d463aeea06e8f7165fd3ec8e1b562b7ca9393fa5e9cf300
+4ab0369ea81c606476ac7fdde51800af824b0b6832d9e79cb47cc6fade2cafef
+
+Total reclaimed space: 0B
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+h3. *Building multi-stage Docker Image of my Golang Web App*
+ - With multi-stage builds, you use multiple FROM statements in your Dockerfile. Each FROM instruction can use a different base, and each of them begins a new stage of the build. You can selectively copy artifact from one stage to another, leaving behind everything you don’t want in the final image.
+ - Best benefit of multi-stage docker file is that it will reduce the size of end docker image.
+
+ - Below is the dockerfile of the project
+
+*Dockerfile*
+{code:java}
+# creating golang base image as builder for multistage build
+FROM golang:1.16.3-alpine AS builder
+# creating build directory for project
+RUN mkdir /build
+# adding project files to build directory
+ADD go.mod go.sum main.go /build/
+# poing build directory as work directory
+WORKDIR /build
+# generating project build 
+RUN go build
+
+# running project on alpine os as baseimage
+FROM alpine
+# adduser command -D::: Default -S:::Shell -h:::help --> adding user dhruv
+RUN adduser -S -D -H -h  /app dhruv
+# setting dhruv as user
+USER dhruv
+# taking build from builder image(copying gowebapp build file from uild directory to app directory)
+COPY --from=builder /build/gowebapp /app/
+# copying view files
+COPY views/ /app/views
+# poing app directory as work directory
+WORKDIR /app
+# executing project build
+CMD ["./gowebapp"]
+{code}
+*docker build*
+{code:java}
+ docker build -t go_web_app .
+{code}
+ - "-t" is use to give docker image tag.
+ - Above command will create docker image named as "go_web_app"
+ - docker image name must be in small case
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+go_web_app          latest              5cd3e123327a        About a minute ago   15.1MB
+golang              1.16.3-alpine       270727b8fd0f        3 weeks ago          301MB
+golang              1.16.3              d5dc529b0ee7        3 weeks ago          862MB
+alpine              latest              6dbb9cc54074        4 weeks ago          5.61MB
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+*docker run*
+{code:java}
+docker run  --name gowebapp -p 9009:9009  go_web_app
+{code}
+ - "-p" is use to pass port, it follows as *container port:host port*
+ - "--name" use to give container name, in our case it is gowebapp
+ - There are many more flags available for run command
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker run  --name gowebapp -p 9009:9009   go_web_app
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /hello                    --> main.main.func1 (3 handlers)
+[GIN-debug] GET    /api/ping                 --> main.main.func2 (3 handlers)
+[GIN-debug] Listening and serving HTTP on :9009
+{code}
+ - Now we can see running container using "decker ps -a"
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                    NAMES
+31fa4f513752        go_web_app          "./gowebapp"        5 seconds ago       Up 4 seconds        0.0.0.0:9009->9009/tcp   gowebapp
+{code}
+*docker stop <container id>*
+ - Use to stop running container
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker stop 31fa4f513752
+31fa4f513752
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker ps -a            
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
+31fa4f513752        go_web_app          "./gowebapp"        2 minutes ago       Exited (2) 2 seconds ago                       gowebapp
+dprajapati@C02CTK50MD6M DevOps-Training-Project %
+{code}
+*docker kill <container id>*
+ - Use to kill running container
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker start 31fa4f513752
+31fa4f513752
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker ps -a             
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                    NAMES
+31fa4f513752        go_web_app          "./gowebapp"        3 minutes ago       Up 2 seconds        0.0.0.0:9009->9009/tcp   gowebapp
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker kill 31fa4f513752
+31fa4f513752
+dprajapati@C02CTK50MD6M DevOps-Training-Project % docker ps -a            
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                       PORTS               NAMES
+31fa4f513752        go_web_app          "./gowebapp"        3 minutes ago       Exited (137) 2 seconds ago                       gowebapp
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+ - The difference between "docker kill" and "docker stop" is that ‘docker stop’ gives the container time to shutdown gracefully, in situations when it is taking too much time for getting the container to stop, one can opt to kill it.
+
+h3. *Docker Compose*
+ - It is use to run multi-container docker application
+ - It's YAML based configuration file for application's services
+ - Using single command "docker compose up" or "docker-compose up" we can run all the micro-services with the help of this config file.
+ - compose can work in different environments such as staging, development, production etc...
+
+*docker-compose.yaml*
+{code:java}
+version: "1.0"  # optional since v1.27.0
+services:
+  web:
+    build: .
+    ports:
+      - "9009:9009"
+    volumes:
+      - .:/app
+      - logvolume01:/var/log
+    links:
+      - go
+  go:
+    image: go
+volumes:
+  logvolume01: {}
+{code}
+
+h3. *Docker Swarm*
+ - Docker Swarm is container orchestration service such as K8s and Apache Mesos.
+
+ - Image you want to spin up 1000 container, if you do manually it will take too much time. At that time orchestration comes in handy.
+
+ - There are many more benefits of orchestrating the micro services such as health checks, scaling the cluster, performing rolling updates across the containers etc...
+
+ - Each node of a Docker Swarm is a Docker daemon, and all Docker daemons interact using the Docker API. Each container within the Swarm can be deployed and accessed by nodes of the same cluster.
+
+*Docker Swarm Workflow*
+ - In Docker Swarm, All the containers are launched using services.Services are nothing but a group of containers.
+
+ - There are two types of nodes in docker swarm. One is *Manager Node* and other one is *Worker Node*
+
+ - The manager node knows the status of the worker nodes in a cluster, and the worker nodes accept tasks sent from the manager node. Every worker node has an agent that reports on the state of the node's tasks to the manager. This way, the manager node can maintain the desired state of the cluster.
+
+ - The worker nodes communicate with the manager node using Docker REST API.
+
+ - While creating a service, we will have to specify which container image we're going to use. we can set up commands and services to be either global or replicated: a global service will run on every Swarm node, and on a replicated service, the manager node distributes tasks to worker nodes.
+
+ - Docker Swarm is the simple in compare to K8s, Automated load balanced and easy to setup.

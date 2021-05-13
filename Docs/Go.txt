@@ -1,0 +1,213 @@
+h2. Go Language
+----
+ Language Developed by Google in 2007 and made publicly available in 2009.
+ - General-Purpose Programming Language
+ - Fast Compiled, concurrent programming language.
+ - Basically Go is similar to C-Language with features sprinkled of Python Language.
+
+h3. *Products build using Go*
+ - K8s
+ - Docker
+ - Terrform
+ - InfluxDB
+ - etc...
+
+h3. *helloworld.go*
+
+{code:java}
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello World")
+}
+{code}
+
+*Output*
+
+{code:java}
+dprajapati@C02CTK50MD6M Go % go run helloworld.go 
+Hello World
+dprajapati@C02CTK50MD6M Go % 
+{code}
+
+*Program Explanation*
+
+- Without package main go program will not run, this lines states that this program is fall under the main package
+- Next we have imported "fmt" library, which stands for formatted I/O.
+- Function main is entry point for go programs, every programs must have main function.
+- In function I have passed function of "fmt" library which gave use output hello world.
+
+h3. *Concurrency*
+- Concurrency is the capability to deal with lots of things at once.
+- GoRoutines, channels are used to achieve concurrency in Go.
+- GoRoutines are functions that runs concurrently and through channels goroutines can communicate with each other.
+
+*concurrency.go*
+
+{code:java}
+package main
+
+import (
+	"fmt"
+)
+
+func Square(number int, SQoperation chan int) {
+	sum := 0
+	for number != 0 {
+		digit := number % 10
+        sum += digit * digit
+		number /= 10 
+	}
+
+	SQoperation <- sum
+}
+
+func Cube(number int, CBoperation chan int) {
+	sum := 0
+	for number != 0 {
+		digit := number % 10
+        sum += digit * digit * digit
+		number /= 10 
+	}
+
+	CBoperation <- sum
+}
+
+func main() {
+	number := 4
+	square := make(chan int)
+	cube := make(chan int)
+	go Square(number, square)
+	go Cube(number, cube)
+	s, c := <-square, <-cube
+	fmt.Println("Square is:", s)
+	fmt.Println("Cube is:", c)
+	fmt.Println("Final Output:", s + c)
+}
+{code}
+
+*Output*
+
+{code:java}
+dprajapati@C02CTK50MD6M Go % go run ~/Desktop/goRoutine.go 
+Square is: 16
+Cube is: 64
+Final Output: 80
+dprajapati@C02CTK50MD6M Go % 
+{code}
+
+*Program Explanation*
+- The Square function calculates the sum of squares of individual digits and sends it to channel "SQOperation", similarly Cube function calculates the sum of cubes of individual digits and sends it to channel "CBOperation".
+- These function will execute as separate goroutine when we called them in main function and they pass data to channels, main routine waits for data from both these channels.
+- Once the data is received from both the channels, they will be stored in variables and final output is computed and printed.
+
+h3. *Simple Web App using Golang*
+
+- I have used *Gin* web development framework to build the simple web app. Although Go is very powerful language and builtin support for creating web app, we can use "http/net" to built APIs but Gin makes our work so easy.
+
+- Here is the project structure of our small project.
+
+      !screenshot-1.png|thumbnail! 
+
+- "go.mod" records the dependancies of projects.
+- "go.sum" lists down the checksum of direct and indirect dependency required along with the version
+
+*main.go*
+
+{code:java}
+package main
+
+
+import (
+	// Gin is lightweight framework of go, such as Flask in python
+	"github.com/gin-gonic/gin"
+	// Static library for serving html and static file
+	"github.com/gin-gonic/contrib/static"
+)
+
+func main() {
+
+	// Creating router object
+	router := gin.Default()
+
+	// Handler function called by HTTP GET, simply print "Hello World"
+	router.GET("/hello", func(c *gin.Context){
+		c.String(200, "Hello World")
+	})
+
+	// Creating api object for serving HTML and JSON
+	api := router.Group("/api")
+
+	api.GET("/ping", func(c *gin.Context){
+		c.JSON(200, gin.H {
+			"message": "pong",
+		})
+	})
+
+	// Serving static files
+	router.Use(static.Serve("/", static.LocalFile("./views", true)))
+
+	// Running project on 9009
+	router.Run(":9009")
+
+}
+{code}
+
+- I have explained each lines via comment in program.
+
+*index.html*
+
+{code:java}
+<html>
+  <head>
+    <link rel="stylesheet" href="/css/stylesheet.css" />
+  </head>
+  <body>
+    <h1>Hello, World!</h1>
+  </body>
+</html>
+{code}
+
+*stylesheet.css*
+
+{code:java}
+body {
+    font-family: Arial;
+  }
+  
+  h1 {
+    color: rgba(9, 85, 129, 0.993);
+  }
+{code}
+
+*We can run the project in two way*
+
+1.  Directly run using "go run main.go"
+
+2. Create build using "go build" and run the build
+
+Created and Ran the build
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % go build
+dprajapati@C02CTK50MD6M DevOps-Training-Project % ./gowebapp 
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /hello                    --> main.main.func1 (3 handlers)
+[GIN-debug] GET    /api/ping                 --> main.main.func2 (3 handlers)
+[GIN-debug] Listening and serving HTTP on :9009
+{code}
+
+*Output*
+
+ !screenshot-2.png|thumbnail!   !screenshot-3.png|thumbnail!   !screenshot-4.png|thumbnail! 
+
+*HTTP Status 200 for Access Api*
+
+ !screenshot-5.png|thumbnail! 
