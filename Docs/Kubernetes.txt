@@ -1,0 +1,368 @@
+h2. Kubernetes
+----
+h3. *What is Kubernetes?*
+ - K8s is Open Source Container Orchestration Tool, originally developed by Google
+ - It helps us to manage containerized applications in different environments
+
+h3. *Features of K8s*
+ - High Availability or No Downtime [Always accessible by users]
+ - Scalability or High Performance [Users have very high response rate from the application]
+ - Disaster Recovery - Backup and Restore [If something bad happens with server K8s has tech to take bakup of data where it stopped working and resume again from that point]
+
+h3. *Components of K8s*
+ - *Node:* Node is a simple server or virtual machine
+
+ - *Pod:* It's smallest unit of K8s and abstraction over the container. It creates running env for container. Using pod we do not have to directly work with container technology. we only interact with the K8s layer.
+ We can run multiple container inside the one pod but usually we only run 1 container per pod with side service. Each pod gets it's own ip address and each pod can communicate with each other using IP address.
+ IP addresses are internal Ips not the public IPs. Pods can die very easily and if one pod dies than new one will be replaced by that pod with new IP address.
+
+ - *Service and Ingress:* Provides permanent IP address that can ne attached with pod. Life cycle of pods and service are not connected so if pod dies the service and it's ip will stay.
+ External service open communication from external sources. Internal Service can not be accessed by external sources such as database can't accessed by users. We use Ingress for external service.
+ Service is load balancer which will get the request and send it to the pod which is less busy.
+
+ - *ConfigMap:* It is external configuration of application. It usually contains the urls of database or some other services. It connected to the pods so pods get data from that url.
+ So now we changes any thing in database or any other service we do no have to build image again and push it to pod.
+
+ - *Secret:* It is just like configMap but it is used to store secret data such as credentials, certificates etc in base 64 encoded format. The built in security mechanism is not enabled by default.
+
+ - *Volumes:* It attaches physical storage to pod. Storage could be on server node or remote storage. So if pod restarted your data will not lost.
+
+ - *Deployment and Stateful set:* We replicate everything including node itself. The replica is connected to the same service with permanent IP address.
+ We will not create second pod for replication, we will define blueprints of the pods. Blueprints is called as Deployment. Deployment can be scaled up and down. 
+ Deployment is another abstraction over the pods.
+ Database can not replicated by deployment because database has the state which is it's data. If we replicate it will create inconsistencies of data. 
+ StatefulSet is use to communicate with database through the pod. StatefulSet will take care of replication in the manner that it will not create inconsistencies.
+
+h3. *K8s Architecture*
+ - Kubernetes cluster consists of at least one master and multiple compute nodes
+ - The master is responsible for exposing the application program interface (API), scheduling the deployments and managing the overall cluster.
+ - Each node runs a container runtime, such as Docker, along with an agent that communicates with the master.
+ - The node also runs additional components for logging, monitoring, service discovery and optional add-ons. Nodes are the workhorses of a Kubernetes cluster.
+ - They expose compute, networking and storage resources to applications.
+ - The definition of Kubernetes objects, such as pods, replica sets and services, are submitted to the master. Based on the defined requirements and availability of resources, the master schedules the pod on a specific node.
+ - The node pulls the images from the container image registry and coordinates with the local container runtime to launch the container.
+
+h3. *Minikube & Kubectl*
+ - *Minikube:* A ONE Node cluster, where the master and worker processes are on the same machine.
+ - *Kubectl:* The command line tool for Kubernetes, then enables the interaction with the cluster: to create pods, services and other components
+
+h3. *Setup Minikube and Running Demo Project*
+
+*Install command*
+{code:java}
+brew install minikube
+{code}
+
+*Commands available in minicube*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % minikube
+minikube provisions and manages local Kubernetes clusters optimized for development workflows.
+
+Basic Commands:
+  start          Starts a local Kubernetes cluster
+  status         Gets the status of a local Kubernetes cluster
+  stop           Stops a running local Kubernetes cluster
+  delete         Deletes a local Kubernetes cluster
+  dashboard      Access the Kubernetes dashboard running within the minikube cluster
+  pause          pause Kubernetes
+  unpause        unpause Kubernetes
+
+Images Commands:
+  docker-env     Configure environment to use minikube's Docker daemon
+  podman-env     Configure environment to use minikube's Podman service
+  cache          Add, delete, or push a local image into minikube
+  image          Manage images
+
+Configuration and Management Commands:
+  addons         Enable or disable a minikube addon
+  config         Modify persistent configuration values
+  profile        Get or list the current profiles (clusters)
+  update-context Update kubeconfig in case of an IP or port change
+
+Networking and Connectivity Commands:
+  service        Returns a URL to connect to a service
+  tunnel         Connect to LoadBalancer services
+
+Advanced Commands:
+  mount          Mounts the specified directory into minikube
+  ssh            Log into the minikube environment (for debugging)
+  kubectl        Run a kubectl binary matching the cluster version
+  node           Add, remove, or list additional nodes
+  cp             Copy the specified file into minikube
+
+Troubleshooting Commands:
+  ssh-key        Retrieve the ssh identity key path of the specified node
+  ssh-host       Retrieve the ssh host key of the specified node
+  ip             Retrieves the IP address of the specified node
+  logs           Returns logs to debug a local Kubernetes cluster
+  update-check   Print current and latest version number
+  version        Print the version of minikube
+
+Other Commands:
+  completion     Generate command completion for a shell
+
+Use "minikube <command> --help" for more information about a given command.
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+
+*starting minikube cluster*
+{code:java}
+minikube start
+{code}
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % minikube start
+😄  minikube v1.20.0 on Darwin 10.15.7
+✨  Automatically selected the docker driver. Other choices: hyperkit, ssh
+👍  Starting control plane node minikube in cluster minikube
+🚜  Pulling base image ...
+💾  Downloading Kubernetes v1.20.2 preload ...
+    > gcr.io/k8s-minikube/kicbase...: 358.10 MiB / 358.10 MiB  100.00% 1.73 MiB
+    > preloaded-images-k8s-v10-v1...: 491.71 MiB / 491.71 MiB  100.00% 1.77 MiB
+    > gcr.io/k8s-minikube/kicbase...: 358.10 MiB / 358.10 MiB  100.00% 2.23 MiB
+🔥  Creating docker container (CPUs=2, Memory=1990MB) ...
+🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
+    ▪ Generating certificates and keys ...
+    ▪ Booting up control plane ...
+    ▪ Configuring RBAC rules ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner, default-storageclass
+
+❗  /usr/local/bin/kubectl is version 1.16.6-beta.0, which may have incompatibilites with Kubernetes 1.20.2.
+    ▪ Want kubectl v1.20.2? Try 'minikube kubectl -- get pods -A'
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+{code}
+*Installing kubectl*
+{code:java}
+minikube kubectl -- get po -A
+{code}
+
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % minikube kubectl -- get po -A
+    > kubectl.sha256: 64 B / 64 B [--------------------------] 100.00% ? p/s 0s
+    > kubectl: 44.09 MiB / 44.09 MiB [---------------] 100.00% 4.24 MiB p/s 11s
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-74ff55c5b-ddfmc            1/1     Running   0          65s
+kube-system   etcd-minikube                      0/1     Running   0          78s
+kube-system   kube-apiserver-minikube            1/1     Running   0          78s
+kube-system   kube-controller-manager-minikube   1/1     Running   0          78s
+kube-system   kube-proxy-qldsj                   1/1     Running   0          65s
+kube-system   kube-scheduler-minikube            1/1     Running   0          78s
+kube-system   storage-provisioner                1/1     Running   0          78s
+{code}
+
+
+*Commands available in Kubectl*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % kubectl
+kubectl controls the Kubernetes cluster manager.
+
+ Find more information at: https://kubernetes.io/docs/reference/kubectl/overview/
+
+Basic Commands (Beginner):
+  create         Create a resource from a file or from stdin.
+  expose         Take a replication controller, service, deployment or pod and expose it as a new Kubernetes Service
+  run            Run a particular image on the cluster
+  set            Set specific features on objects
+
+Basic Commands (Intermediate):
+  explain        Documentation of resources
+  get            Display one or many resources
+  edit           Edit a resource on the server
+  delete         Delete resources by filenames, stdin, resources and names, or by resources and label selector
+
+Deploy Commands:
+  rollout        Manage the rollout of a resource
+  scale          Set a new size for a Deployment, ReplicaSet, Replication Controller, or Job
+  autoscale      Auto-scale a Deployment, ReplicaSet, or ReplicationController
+
+Cluster Management Commands:
+  certificate    Modify certificate resources.
+  cluster-info   Display cluster info
+  top            Display Resource (CPU/Memory/Storage) usage.
+  cordon         Mark node as unschedulable
+  uncordon       Mark node as schedulable
+  drain          Drain node in preparation for maintenance
+  taint          Update the taints on one or more nodes
+
+Troubleshooting and Debugging Commands:
+  describe       Show details of a specific resource or group of resources
+  logs           Print the logs for a container in a pod
+  attach         Attach to a running container
+  exec           Execute a command in a container
+  port-forward   Forward one or more local ports to a pod
+  proxy          Run a proxy to the Kubernetes API server
+  cp             Copy files and directories to and from containers.
+  auth           Inspect authorization
+
+Advanced Commands:
+  diff           Diff live version against would-be applied version
+  apply          Apply a configuration to a resource by filename or stdin
+  patch          Update field(s) of a resource using strategic merge patch
+  replace        Replace a resource by filename or stdin
+  wait           Experimental: Wait for a specific condition on one or many resources.
+  convert        Convert config files between different API versions
+  kustomize      Build a kustomization target from a directory or a remote url.
+
+Settings Commands:
+  label          Update the labels on a resource
+  annotate       Update the annotations on a resource
+  completion     Output shell completion code for the specified shell (bash or zsh)
+
+Other Commands:
+  api-resources  Print the supported API resources on the server
+  api-versions   Print the supported API versions on the server, in the form of "group/version"
+  config         Modify kubeconfig files
+  plugin         Provides utilities for interacting with plugins.
+  version        Print the client and server version information
+
+Usage:
+  kubectl [flags] [options]
+
+Use "kubectl <command> --help" for more information about a given command.
+Use "kubectl options" for a list of global command-line options (applies to all commands)
+{code}
+
+*Checking how many nodes are available*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % kubectl get nodes
+NAME       STATUS   ROLES                  AGE   VERSION
+minikube   Ready    control-plane,master   19s   v1.20.2
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+
+*Minikube status*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+
+*Start minikube in debug mode: It will log all the errors*
+{code:java}
+minikube start --alsologtostderr
+{code}
+
+*Deploying Application*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % kubectl create deployment hello-minikube --image=k8s.gcr.io/echoserver:1.4
+deployment.apps/hello-minikube created
+dprajapati@C02CTK50MD6M DevOps-Training-Project % kubectl expose deployment hello-minikube --type=NodePort --port=8008
+service/hello-minikube exposed
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+*Service Status*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % kubectl get services hello-minikube
+NAME             TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+hello-minikube   NodePort   10.106.114.6   <none>        8008:30141/TCP   28s
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+*Launching service using minikube*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % minikube service hello-minikube
+|-----------|----------------|-------------|---------------------------|
+| NAMESPACE |      NAME      | TARGET PORT |            URL            |
+|-----------|----------------|-------------|---------------------------|
+| default   | hello-minikube |        8008 | http://192.168.49.2:30141 |
+|-----------|----------------|-------------|---------------------------|
+🏃  Starting tunnel for service hello-minikube.
+|-----------|----------------|-------------|------------------------|
+| NAMESPACE |      NAME      | TARGET PORT |          URL           |
+|-----------|----------------|-------------|------------------------|
+| default   | hello-minikube |             | http://127.0.0.1:51328 |
+|-----------|----------------|-------------|------------------------|
+🎉  Opening service default/hello-minikube in default browser...
+❗  Because you are using a Docker driver on darwin, the terminal needs to be open to run it.
+
+{code}
+*Port forwarding using kubectl*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % kubectl port-forward service/hello-minikube 20001:8008
+Forwarding from 127.0.0.1:20001 -> 8008
+Forwarding from [::1]:20001 -> 8008
+Handling connection for 20001
+Handling connection for 20001
+{code}
+*Creating load balancer*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % kubectl create deployment balanced --image=k8s.gcr.io/echoserver:1.4  
+deployment.apps/balanced created
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+*Exposing Load Balancer*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % kubectl expose deployment balanced --type=LoadBalancer --port=8008
+service/balanced exposed
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+*Starting balanced deployment*
+{code:java}
+dprajapati@C02CTK50MD6M Desktop % minikube tunnel
+🏃  Starting tunnel for service balanced.
+{code}
+*Find the routable IP*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % kubectl get services balanced            
+NAME       TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+balanced   LoadBalancer   10.111.248.247   127.0.0.1     8008:32213/TCP   106s
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+*Hallting the cluster*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % minikube stop
+✋  Stopping node "minikube"  ...
+🛑  Powering off "minikube" via SSH ...
+🛑  1 nodes stopped.
+{code}
+*checking list of addons available in minikube*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % minikube addons list
+|-----------------------------|----------|--------------|
+|         ADDON NAME          | PROFILE  |    STATUS    |
+|-----------------------------|----------|--------------|
+| ambassador                  | minikube | disabled     |
+| auto-pause                  | minikube | disabled     |
+| csi-hostpath-driver         | minikube | disabled     |
+| dashboard                   | minikube | disabled     |
+| default-storageclass        | minikube | enabled ✅   |
+| efk                         | minikube | disabled     |
+| freshpod                    | minikube | disabled     |
+| gcp-auth                    | minikube | disabled     |
+| gvisor                      | minikube | disabled     |
+| helm-tiller                 | minikube | disabled     |
+| ingress                     | minikube | disabled     |
+| ingress-dns                 | minikube | disabled     |
+| istio                       | minikube | disabled     |
+| istio-provisioner           | minikube | disabled     |
+| kubevirt                    | minikube | disabled     |
+| logviewer                   | minikube | disabled     |
+| metallb                     | minikube | disabled     |
+| metrics-server              | minikube | disabled     |
+| nvidia-driver-installer     | minikube | disabled     |
+| nvidia-gpu-device-plugin    | minikube | disabled     |
+| olm                         | minikube | disabled     |
+| pod-security-policy         | minikube | disabled     |
+| registry                    | minikube | disabled     |
+| registry-aliases            | minikube | disabled     |
+| registry-creds              | minikube | disabled     |
+| storage-provisioner         | minikube | enabled ✅   |
+| storage-provisioner-gluster | minikube | disabled     |
+| volumesnapshots             | minikube | disabled     |
+|-----------------------------|----------|--------------|
+dprajapati@C02CTK50MD6M DevOps-Training-Project % 
+{code}
+*Deleting all minikube cluster*
+{code:java}
+dprajapati@C02CTK50MD6M DevOps-Training-Project % minikube delete --all
+🔥  Deleting "minikube" in docker ...
+🔥  Removing /Users/dprajapati/.minikube/machines/minikube ...
+💀  Removed all traces of the "minikube" cluster.
+🔥  Successfully deleted all profiles
+{code}
