@@ -1,0 +1,4 @@
+---
+containers: 1
+container_name: docker_helloworld
+container_image: hello-world:latest

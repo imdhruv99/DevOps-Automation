@@ -1,0 +1,9 @@
+---
+- name : This is hello world example using ansible
+  hosts: localhost
+
+  tasks:
+          - name: create file helloworld.txt with text "Hello World!!".
+            copy:
+                    content: Hello World!!
+                    dest: helloworld.txt
