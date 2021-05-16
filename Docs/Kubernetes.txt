@@ -1,4 +1,4 @@
-h2. Kubernetes
+h2. Container Orchestration: Kubernetes
 ----
 h3. *What is Kubernetes?*
  - K8s is Open Source Container Orchestration Tool, originally developed by Google

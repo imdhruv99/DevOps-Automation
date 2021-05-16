@@ -1,0 +1,288 @@
+h2. Configuration management: Ansible
+----
+- Ansible is Configuration management tool. Everything in ansible is based on YAML files and Jinja2 Template.
+- Using ansible we can install software, configure services, test our server, deploy applications and much more...
+- It is also used for provisioning the infrastructure.
+- It uses SSH to communicate with server, so it does not need special agent on the client-side.
+- Ansible is developed in python.
+
+h3. *Ansible Terms*
+
+- *Ansible Server:* It is master server where ansible is installed and which is use to run tasks and playbooks
+
+- *Inventory and Inventory File:* Inventory is file where we need to put data related to client servers. 
+
+- *Module:* Set of similar command which can be used to execute at client side.
+
+- *Task:* It is part of ansible playbook and contains single procedure to perform.
+
+- *Role:* It is approch to organize the files and later use this files in ansible playbooks.
+
+- *Fact:* Information fetched from client side
+
+h3. *Ansibe-AdHoc Commands*
+
+- Ansible-AdHoc command can be used when we want to issue some commands on a server or a bunch of servers.
+
+*hosts* Inventory file
+{code:java}
+[development]
+node_1 = 172.31.25.90 ansible_ssh_port=22
+{code}
+
+Running AdHoc command to make sure that the hosts are accessible from the ansible server.
+{code:java}
+dprajapati@C02CTK50MD6M% ansible -i hosts all -m ping
+node_1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+{code}
+
+- "-m" used to specify parameter in our case it's ping.
+- "-i" can be used to point hosts file.
+- "--limit" command can be used to issue command for specific hosts only.
+
+{code:java}
+dprajapati@C02CTK50MD6M% ansible -i hosts all -m ping - hosts --limit node_2
+node_2 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+{code}
+
+*Copy Module*
+- Copy module is used to copy files from master server to all other slave server or specific server.
+
+{code:java}
+dprajapati@C02CTK50MD6M% ansible -i hosts all -m copy -a "src=/root/test_ansible/testfile dest=/tmp/testfile"
+node_1 | SUCCESS => {
+    "changed": true,
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "dest": "/tmp/testfile",
+    "gid": 0,
+    "group": "root",
+    "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
+    "mode": "0644",
+    "owner": "root",
+    "size": 0,
+    "src": "/root/.ansible/tmp/ansible-tmp-1562216392.43-256741011164877/source",
+    "state": "file",
+    "uid": 0
+}
+{code}
+
+*Ansible Playbooks*
+
+- Ansible Playbooks are the way of sending commands to remote systems through scripts.
+- Ansible playbooks are used to configure complex system environments to increase flexibility by executing a script to one or more systems. 
+- Ansible playbooks tend to be more of a configuration language than a programming language.
+- Through a playbook, we can designate specific roles to some hosts and other roles to other hosts.
+
+*helloworld.yaml*
+{code:java}
+ubuntu@ip-172-31-25-90:~/ansible-project$ vi helloworld.yaml
+ubuntu@ip-172-31-25-90:~/ansible-project$ cat helloworld.yaml 
+---
+- name : This is hello world example using ansible
+  hosts: localhost
+
+  tasks:
+          - name: create file helloworld.txt with text "Hello World!!".
+            copy:
+                    content: Hello World!!
+                    dest: helloworld.txt
+{code}
+
+- Above playbook will create helloworld.txt file with text "Hello World!!".
+
+Running helloworld.yaml
+{code:java}
+ubuntu@ip-172-31-25-90:~/ansible-project$ ansible-playbook helloworld.yaml 
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+PLAY [This is hello world example using ansible] *************************************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ***************************************************************************************************************************************************************************************************************************************
+ok: [localhost]
+
+TASK [create file helloworld.txt with text "Hello World!!".] *************************************************************************************************************************************************************************************************
+changed: [localhost]
+
+PLAY RECAP ***************************************************************************************************************************************************************************************************************************************************
+localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+{code}
+
+helloworld.txt is created
+
+{code:java}
+ubuntu@ip-172-31-25-90:~/ansible-project$ ls -la
+total 16
+drwxrwxr-x 2 ubuntu ubuntu 4096 May 16 06:07 .
+drwxr-xr-x 6 ubuntu ubuntu 4096 May 16 06:07 ..
+-rw-rw-r-- 1 ubuntu ubuntu   13 May 16 06:07 helloworld.txt
+-rw-rw-r-- 1 ubuntu ubuntu  258 May 16 06:07 helloworld.yaml
+ubuntu@ip-172-31-25-90:~/ansible-project$ cat helloworld.txt 
+Hello World!!
+ubuntu@ip-172-31-25-90:~/ansible-project$ ls -la
+{code}
+
+h3. *Installing Docker on our Remote server for Golang App Project*
+
+*Project Structure*
+{code:java}
+ubuntu@ip-172-31-25-90:~/ansible-project$ tree docker
+docker
+├── main.yaml
+└── vars
+    └── default.yml
+
+1 directory, 2 files
+{code}
+
+*default.yaml*
+{code:java}
+ubuntu@ip-172-31-25-90:~/ansible-project/docker$ vi vars/default.yml 
+ubuntu@ip-172-31-25-90:~/ansible-project/docker$ cat vars/default.yml 
+---
+containers: 1
+container_name: docker_helloworld
+container_image: hello-world:latest
+{code}
+
+*main.yaml*
+{code:java}
+---
+ - hosts: localhost
+   become: true
+   vars_files:
+    - vars/default.yml  
+
+   tasks:
+
+   - name: Install aptitude using apt
+     apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+
+   - name: Install required system packages
+     apt: name={{ item }} state=latest update_cache=yes
+     loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+   - name: Add Docker GPG apt Key
+     apt_key:
+       url: https://download.docker.com/linux/ubuntu/gpg
+       state: present
+   
+   - name: Add Docker Repository
+     apt_repository:
+       repo: deb https://download.docker.com/linux/ubuntu bionic stable
+       state: present
+
+   - name: Update apt and install docker-ce
+     apt: update_cache=yes name=docker-ce state=latest
+
+   - name: Install Docker Module for Python
+     pip:
+       name: docker
+
+   - name: Pull default Docker image
+     docker_image:
+        name: "{{ container_image }}"
+        source: pull
+
+   - name: Create default containers
+     docker_container:
+       name: "{{ container_name }}{{ item }}"
+       image: "{{ container_image }}"
+       state: present
+     with_sequence: count={{ containers }}
+{code}
+
+- This will first install all the system requirement using APT Repository and then install docker on my remote machine.
+- "become:true" is used to access server as root user.
+- Then we pulled to hello-world image from docker repository and created container.
+- "{{}}" curly brackets used to call variable in yaml file which is based on jinja2 Template.
+
+*Running Playbook*
+{code:java}
+ubuntu@ip-172-31-25-90:~/ansible-project/docker$ ansible-playbook main.yaml 
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+PLAY [localhost] *********************************************************************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ***************************************************************************************************************************************************************************************************************************************
+ok: [localhost]
+
+TASK [Install aptitude using apt] ****************************************************************************************************************************************************************************************************************************
+ok: [localhost]
+
+TASK [Install required system packages] **********************************************************************************************************************************************************************************************************************
+ok: [localhost] => (item=apt-transport-https)
+ok: [localhost] => (item=ca-certificates)
+ok: [localhost] => (item=curl)
+ok: [localhost] => (item=software-properties-common)
+ok: [localhost] => (item=python3-pip)
+changed: [localhost] => (item=virtualenv)
+ok: [localhost] => (item=python3-setuptools)
+
+TASK [Add Docker GPG apt Key] ********************************************************************************************************************************************************************************************************************************
+changed: [localhost]
+
+TASK [Add Docker Repository] *********************************************************************************************************************************************************************************************************************************
+changed: [localhost]
+
+TASK [Update apt and install docker-ce] **********************************************************************************************************************************************************************************************************************
+changed: [localhost]
+
+TASK [Install Docker Module for Python] **********************************************************************************************************************************************************************************************************************
+changed: [localhost]
+
+TASK [Pull default Docker image] *****************************************************************************************************************************************************************************************************************************
+changed: [localhost]
+
+TASK [Create default containers] *****************************************************************************************************************************************************************************************************************************
+changed: [localhost] => (item=1)
+
+PLAY RECAP ***************************************************************************************************************************************************************************************************************************************************
+localhost                  : ok=9    changed=7    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+{code}
+
+*Checking docker is installed or not*
+{code:java}
+ubuntu@ip-172-31-25-90:~/ansible-project/docker$ docker --version
+Docker version 20.10.6, build 370c289
+{code}
+
+*Docker is Running*
+{code:java}
+ubuntu@ip-172-31-25-90:~/ansible-project/docker$ sudo systemctl status docker
+● docker.service - Docker Application Container Engine
+     Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sun 2021-05-16 06:34:33 UTC; 54s ago
+TriggeredBy: ● docker.socket
+       Docs: https://docs.docker.com
+   Main PID: 18146 (dockerd)
+      Tasks: 8
+     Memory: 61.9M
+     CGroup: /system.slice/docker.service
+             └─18146 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+
+May 16 06:34:33 ip-172-31-25-90 dockerd[18146]: time="2021-05-16T06:34:33.332340642Z" level=warning msg="Your kernel does not support CPU realtime scheduler"
+May 16 06:34:33 ip-172-31-25-90 dockerd[18146]: time="2021-05-16T06:34:33.332534408Z" level=warning msg="Your kernel does not support cgroup blkio weight"
+May 16 06:34:33 ip-172-31-25-90 dockerd[18146]: time="2021-05-16T06:34:33.332561527Z" level=warning msg="Your kernel does not support cgroup blkio weight_device"
+May 16 06:34:33 ip-172-31-25-90 dockerd[18146]: time="2021-05-16T06:34:33.332745487Z" level=info msg="Loading containers: start."
+May 16 06:34:33 ip-172-31-25-90 dockerd[18146]: time="2021-05-16T06:34:33.587019586Z" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon option --bip can be used to set a preferred IP address"
+May 16 06:34:33 ip-172-31-25-90 dockerd[18146]: time="2021-05-16T06:34:33.720487491Z" level=info msg="Loading containers: done."
+May 16 06:34:33 ip-172-31-25-90 dockerd[18146]: time="2021-05-16T06:34:33.843372393Z" level=info msg="Docker daemon" commit=8728dd2 graphdriver(s)=overlay2 version=20.10.6
+May 16 06:34:33 ip-172-31-25-90 dockerd[18146]: time="2021-05-16T06:34:33.843935141Z" level=info msg="Daemon has completed initialization"
+May 16 06:34:33 ip-172-31-25-90 systemd[1]: Started Docker Application Container Engine.
+May 16 06:34:33 ip-172-31-25-90 dockerd[18146]: time="2021-05-16T06:34:33.894933114Z" level=info msg="API listen on /run/docker.sock"
+{code}
+
+*hello-world image container is created*
+{code:java}
+root@ip-172-31-25-90:~# docker ps -a
+CONTAINER ID   IMAGE                COMMAND    CREATED          STATUS    PORTS     NAMES
+30816e95b4d3   hello-world:latest   "/hello"   50 seconds ago   Created             docker_helloworld1
+{code}
