@@ -1,0 +1,350 @@
+h2. Continuous Integration: Jenkins
+---- 
+
+- Jenkins is Open-Source CI tool written in Java.
+- It supports completed SDLC from building , testing, deploying and other stages.
+
+h3. *What is Continuous Integration?*
+ - Continuous Integration is a process of integrating code changes from multiple developers in a single project many times.
+ - The software is tested immediately after a code commit. With each code commit, code is built and tested.
+ - If the test is passed, the build is tested for deployment. If the deployment is successful, the code is pushed to production.
+
+h3. *Jenkins Workflow*
+ - Jenkins is server based application, It required JDK and Apache tomcat to run.
+ - Jenkins Continuous Integration Pipeline is a powerful instrument that consists of a set of tools designed to host, monitor, compile and test code, or code changes.
+ - Jenkins has wide range of plugin library through which we can integrate tools such as GitHub, Docker, Kubernetes, Terraform, ELK Stack and much more with Jenkins.
+
+h3. *User Access Management with Jenkins*
+ - Jenkins comes with very basic user creation options.
+ - We can create multiple users but can only assign the same global roles and privileges to them.
+ - The Role Strategy Plugin enable us to assign different roles and privileges to different users. we will first need to install the plugin in our Jenkins mange environment.
+
+*Creating User with default jenkins functionality*
+ - Login to jenkins > Go to Manage Jenkins > Go to Manage users under Security panel > click on create user
+ - Add appropriate details and create user.
+
+!screenshot-13.png|thumbnail!
+ - User is created
+
+!screenshot-14.png|thumbnail!
+
+*Creating User with RBAC plugin*
+ - Login to jenkins > Go to Manage Jenkins > Go to Manage Plugins under System Configuration > Click on Available panel
+ - Search and select, click Install without restart
+
+!screenshot-15.png|thumbnail!
+ - Installed successfully
+
+!screenshot-16.png|thumbnail!
+ - Now, Go to Manage Jenkins > Configure Global Security > Under Authorization, select Role Based Strategy. Click on Save
+
+!screenshot-17.png|thumbnail!
+ - Go to Manage Jenkins > Manage and Assign Roles > click on Manage Roles
+ - It can be look like below.
+
+!screenshot-18.png|thumbnail!
+ - Created Developer Role and assign access. Click on Save
+
+!screenshot-19.png|thumbnail!
+
+!screenshot-20.png|thumbnail!
+ - Now Go to Assign Roles under Manage and Assign Roles
+ - Add new user and assign it developer role
+
+!screenshot-21.png|thumbnail!
+h3. *Creating Hello-World Freestyle Project*
+ - Click on New Items on Jenkins Dashboard
+ - Select Freestyle Project, Give it Name and click on OK.
+
+!screenshot-22.png|thumbnail!
+ - Give some Description in General Section.[Optional]
+
+!screenshot-23.png|thumbnail!
+ - Click on Build Section, select 'Execute Shell' from drop down.
+ - Right shell command.
+
+!screenshot-24.png|thumbnail!
+ - Save and Click on Build Now.
+ - After successful build go to Console Output
+
+!screenshot-25.png|thumbnail!
+h3. *Creating Hello-World Pipeline Project*
+ - Click on New Items on Jenkins Dashboard
+ - Select Pipeline Project, Give it Name and click on OK.
+
+!screenshot-26.png|thumbnail!
+ - Give some Description in General Section.[Optional]
+
+!screenshot-27.png|thumbnail!
+ - Go To Pipeline, write below code. Click on Save.
+{code:java}
+	
+pipeline {
+        agent any
+        
+        stages {
+                
+                stage('One') {
+                    
+                    steps {
+                        
+                        echo 'Hello World'
+                        
+                    }
+                
+                }
+                
+                stage('Two') {
+                    
+                    steps {
+
+                        echo 'Hi, This is Dhruv Prajapati'
+                    }
+                
+                }
+
+        }
+}
+{code}
+
+ - Click on Build now and Go to Console Output
+ !screenshot-28.png|thumbnail!
+
+h3. *Pipeline Concepts*
+ - Pipeline code is written in Groovy Syntax Pattern
+
+ - *Pipeline:* A Pipeline is a user-defined model of a CD pipeline. A Pipeline’s code defines your entire build process, which typically includes stages for building an application, testing it and then delivering it.
+ Also, a pipeline block is a key part of Declarative Pipeline syntax.
+
+ - *Node:* A Node is a machine which is part of the Jenkins environment and is capable of executing a Pipeline. Also, a node block is a key part of Scripted Pipeline syntax.
+
+ - *Stage:* A stage block defines a conceptually distinct subset of tasks performed through the entire Pipeline.
+
+ - *Step:* A single task. Fundamentally, a step tells Jenkins what to do at a particular point in time
+
+*Above pipeline example is Declarative Pipeline.*
+h3. *Creating Go Web Application Project Pipeline*
+ - We will use *Scripted Pipeline Syntax* to create Go Project Pipeline.
+
+ - Create Pipeline Project and write some description.
+
+!screenshot-29.png|thumbnail!
+ - Configure '' in Build Triggers panel so we can build jenkins pipeline as soon as *github push command* executed.
+
+!screenshot-30.png|thumbnail!
+ - Write below pipeline code in pipeline section.
+
+{code:java}
+node {
+    
+    stage("1: Pulling project from Github") {
+            
+        git(credentialsId: 'Git Creds', url: 'https://github.com/visualsofDhruv/DevOps-Training-Project', branch: 'main')
+
+    }
+    
+    stage("2: Build Docker Image") {
+        
+        sh 'docker build -t visualsofdhruv/gowebapp:1.0.0 .'
+        
+    }
+    
+    stage("3: Pushing Docker image to docker registry") {
+
+        withDockerRegistry([ credentialsId: "dockerhub", url: "" ]) {
+            
+            sh 'docker push visualsofdhruv/gowebapp:1.0.0'
+            
+        }
+
+    }
+    
+    stage("4: Deploying and Running container on Server") {
+        
+        def dockerRun = 'sudo docker run -p 9009:9009 -d --name go_web_app visualsofdhruv/gowebapp:1.0.0'
+        
+        sshagent(['server-creds']) {
+            
+            sh "ssh -o StrictHostKeyChecking=no ubuntu@3.86.174.140 ${dockerRun}"
+        
+        }
+        
+    }
+    
+}
+{code}
+h3. *Pipeline Code* *Explanation*
+
+*Stage 1: Pulling project from Github*
+ - It will pull the project from given github url and from brach main.
+ - credentialsId is used to pass github login credentials, we only need to use when we want to fetch private repository. Here Git Creds is variable name in which i have stored the creds.
+
+*Stage 2: Build Docker Image*
+ - After successful completion of stage 1 pipeline will move on to build docker image.
+ - For this we need to install Docker Pipeline plugin from Manage plugins in jenkins. This plugin allow us to integrate docker with jenkins.
+ - Then i simply executed shell command which will build docker image with tag of dockerhub username and build verison.
+
+*Stage 3: Pushing Docker image to docker registry*
+ - withDockerRegistry is used to login into docker registry, i have used DockerHub as registry and passed credentials named as dockerhub.
+ - docker push command will push the docker image to dockerhub as soon as login successfully completed.
+ - This stage is important because we want to run our container on remote machine and using registry we can pull our image from that remote machine.
+
+*Stage 4: Deploying and Running container on Server*
+ - First of all, i have defined one variable named as 'dockerRun' which contains docker run command.
+ - *-p* is used to expose port, *-d* will run container in detached mode. That means container will run in background. *-name* will give name to the container.
+ - Then i have used one jenkins plugin "SSH Agent" to ssh into our remote server. I have passed our server key (*.pem file) in server-creds
+ - Now i have executed shell command with *Interpolation*.
+ - Using Interpolation we can pass variables in executing steps. Interpolation must be in double quotation marks or else it will through error.
+ - Next i have ssh into the remote server using username and IP address and executed the dockerRun command using Interpolation.
+ - If we SSH into that remote server first time then it will ask use to give "yes or no" add permenantly. '-o StrictHostKeyChecking=no' flag will supress that.
+
+ - That's all, now Save the project, click on build now and go to Console Output.
+{code:java}
+Started by user Dhruv Prajapati
+Running in Durability level: MAX_SURVIVABILITY
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /Users/dprajapati/.jenkins/workspace/DevOps-Training-Project
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (1: Pulling project from Github)
+[Pipeline] git
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential Git Creds
+ > git rev-parse --resolve-git-dir /Users/dprajapati/.jenkins/workspace/DevOps-Training-Project/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/visualsofDhruv/DevOps-Training-Project # timeout=10
+Fetching upstream changes from https://github.com/visualsofDhruv/DevOps-Training-Project
+ > git --version # timeout=10
+ > git --version # 'git version 2.24.3 (Apple Git-128)'
+using GIT_ASKPASS to set credentials GitHub Credentials
+ > git fetch --tags --force --progress -- https://github.com/visualsofDhruv/DevOps-Training-Project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 8265eb65931b316657cd9bc8d47c1b88c545e956 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 8265eb65931b316657cd9bc8d47c1b88c545e956 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D main # timeout=10
+ > git checkout -b main 8265eb65931b316657cd9bc8d47c1b88c545e956 # timeout=10
+Commit message: "[UPDATED] Jenkinsfile"
+ > git rev-list --no-walk 8265eb65931b316657cd9bc8d47c1b88c545e956 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (2: Build Docker Image)
+[Pipeline] sh
++ docker build -t visualsofdhruv/gowebapp:1.0.0 .
+Sending build context to Docker daemon  19.64MB
+
+Step 1/12 : FROM golang:1.16.3-alpine AS builder
+ ---> 270727b8fd0f
+Step 2/12 : RUN mkdir /build
+ ---> Using cache
+ ---> 0456d587d7b6
+Step 3/12 : ADD go.mod go.sum main.go /build/
+ ---> Using cache
+ ---> c7326019b9c0
+Step 4/12 : WORKDIR /build
+ ---> Using cache
+ ---> a86d3d84dfb7
+Step 5/12 : RUN go build
+ ---> Using cache
+ ---> 1fac2eac0e3c
+Step 6/12 : FROM alpine
+ ---> 6dbb9cc54074
+Step 7/12 : RUN adduser -S -D -H -h  /app dhruv
+ ---> Using cache
+ ---> cacacc858d43
+Step 8/12 : USER dhruv
+ ---> Using cache
+ ---> 06c6fd90147f
+Step 9/12 : COPY --from=builder /build/gowebapp /app/
+ ---> Using cache
+ ---> 0f65ba06ce19
+Step 10/12 : COPY views/ /app/views
+ ---> Using cache
+ ---> eec25ae47aee
+Step 11/12 : WORKDIR /app
+ ---> Using cache
+ ---> 8c35c29ad186
+Step 12/12 : CMD ["./gowebapp"]
+ ---> Using cache
+ ---> 5cd3e123327a
+Successfully built 5cd3e123327a
+Successfully tagged visualsofdhruv/gowebapp:1.0.0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (3: Pushing Docker image to docker registry)
+[Pipeline] withDockerRegistry
+Using the existing docker config file.Removing blacklisted property: authsRemoving blacklisted property: credsStore$ docker login -u visualsofdhruv -p ******** https://index.docker.io/v1/
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+Login Succeeded
+[Pipeline] {
+[Pipeline] sh
++ docker push visualsofdhruv/gowebapp:1.0.0
+The push refers to repository [docker.io/visualsofdhruv/gowebapp]
+739578f3284c: Preparing
+fee00b9fb385: Preparing
+cb08d9a3a794: Preparing
+b2d5eeeaba3a: Preparing
+b2d5eeeaba3a: Layer already exists
+739578f3284c: Layer already exists
+cb08d9a3a794: Layer already exists
+fee00b9fb385: Layer already exists
+1.0.0: digest: sha256:291ae48fb376435c03c42216f8463b91180f8c7bb5365b9446758d636fc06d28 size: 1154
+[Pipeline] }
+[Pipeline] // withDockerRegistry
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (4: Deploying and Running container on Server)
+[Pipeline] sshagent
+[ssh-agent] Using credentials ubuntu (AWS EC2 Server Credentials)
+[ssh-agent] Looking for ssh-agent implementation...
+[ssh-agent]   Exec ssh-agent (binary ssh-agent on a remote machine)
+$ ssh-agent
+SSH_AUTH_SOCK=/var/folders/_w/wtcv0ds91k11p5h0_9d78jrr0000gn/T//ssh-A3IfoEdcpX89/agent.87898
+SSH_AGENT_PID=87899
+Running ssh-add (command line suppressed)
+Identity added: /Users/dprajapati/.jenkins/workspace/DevOps-Training-Project@tmp/private_key_14004683798701206629.key (/Users/dprajapati/.jenkins/workspace/DevOps-Training-Project@tmp/private_key_14004683798701206629.key)
+[ssh-agent] Started.
+[Pipeline] {
+[Pipeline] sh
++ ssh -o StrictHostKeyChecking=no ubuntu@3.86.174.140 sudo docker run -p 9009:9009 -d --name go_web_app visualsofdhruv/gowebapp:1.0.0
+41c001837eac850107d389febeb992cb8649a0326bf8e13946421e17e1377e7c
+[Pipeline] }
+$ ssh-agent -k
+unset SSH_AUTH_SOCK;
+unset SSH_AGENT_PID;
+echo Agent pid 87899 killed;
+[ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
+{code}
+
+Pipeline is executed successfully, now let's check docker container is running or not on remote server
+{code:java}
+root@ip-172-31-25-90:~# docker ps -a
+CONTAINER ID   IMAGE                           COMMAND        CREATED              STATUS          PORTS                                       NAMES
+41c001837eac   visualsofdhruv/gowebapp:1.0.0   "./gowebapp"   About a minute ago   Up 59 seconds   0.0.0.0:9009->9009/tcp, :::9009->9009/tcp   go_web_app
+30816e95b4d3   hello-world:latest              "/hello"       24 hours ago         Created                                                     docker_helloworld1
+root@ip-172-31-25-90:~# 
+{code}
+As we can see our go_web_app container is running on port 9009 along with docker_helloworld1 container which is deployed using ansible.
+
+Now let's check if we can access our website on that IP.
+
+!screenshot-31.png|thumbnail!
+
+!screenshot-33.png|thumbnail!
+
+!screenshot-34.png|thumbnail!
+
+All APIs are accesible because we have open "9009" at the time of creating server using Terraform.
