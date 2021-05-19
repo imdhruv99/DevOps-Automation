@@ -1,0 +1,101 @@
+h2. Cloud Provider: Google Cloud Platform
+----
+
+- Google offers a Wide Range of services from basic Cloud Services like Containers, Compute Engine to Complex Services like Machine Learning as well as Diverse IOT Services. 
+
+h3. *Compute Services*
+- Google Cloud Platform provides a scalable range of computing options. 
+- It provides highly customizable virtual machines you can tailor to match your needs and options to deploy your code directly or via containers.
+
+*Google Compute Engine*
+- It delivers virtual machines running in Google’s innovative data centres and worldwide fibre network. 
+- Compute Engine VMs boot quickly, they come with high-performance persistent and local disk options and deliver consistent performance.
+
+*Google App Engine*
+- The App Engine serves as a platform used for building scalable web applications and IoT backends.
+- App Engine scales applications automatically depending upon the traffic received. 
+- It provides you with built-in services and APIs, such as Datastores, NoSQL, Memcache, and a user authentication API, common to most applications.
+
+*Google Kubernetes Engine*
+- It is a powerful Cluster Manager and balanced system for running your Docker containers. 
+- Kubernetes Engine schedules your containers into the cluster, keeps them healthy and manages them automatically based on requirements you define.
+
+*Google Cloud Container Registry*
+- It is a private Docker repository that works with popular continuous delivery systems.
+
+h3. *Networking Services*
+- Networking is one of the most important as well as one of the basics of Google Cloud Platform Services offered by state of the art Networking Services.
+
+*Cloud Virtual Network*
+- You can connect various GCP resources to each other using the Google-owned global network, and isolate them from one another by using their Virtual Private Cloud (VPC) Network.
+
+*Google Cloud Load Balancing*
+- It helps you Scale your applications according to your needs. Balance your load of Compute machines resources in single or multiple regions, close to your users and to meet your high availability requirements.
+
+*Cloud CDN*
+- It uses Google’s globally distributed edge caches to accelerate content delivery for websites and applications served out of Google Compute Engine. 
+- Cloud CDN lowers network latency, offloads origins, and reduces serving costs.
+
+*Google Cloud Interconnect*
+- Cloud Interconnect allows Cloud platform customers to connect to Google via enterprise-grade connections with higher availability and/or lower latency than their existing Internet connections.
+
+*Google Cloud DNS* 
+- It is a scalable, reliable and managed authoritative Domain Naming System (DNS) service running on the same infrastructure as Google. 
+- It has low latency, high availability and is a cost-effective way to make your application and services available to your users.
+
+h3. *Storage & Database Services*
+
+*Google Cloud Storage*
+- It offers a unified offering across the Google Spectrum. It can handle both live data as well as Cloud archival solutions.
+
+*Cloud SQL*
+- Cloud SQL is a fully-managed database service that makes it easy to Set up, Maintain, Manage, and Administer your relational MySQL and PostgreSQL databases in the cloud.
+
+*Cloud Bigtable* 
+- It provides a massively scalable NoSQL database suitable for low-latency and high-throughput workloads. 
+- It integrates easily with popular Big Data tools like Hadoop and Spark and it supports the open-source, industry-standard HBase API.
+
+*Google Cloud Datastore* 
+- Cloud Datastore gives you an elastic, highly available document-oriented database as a service.
+
+*Persistent Disk*
+- It is a high-performance block storage service suitable for Virtual Machines and container storage. It offers unmatched price to performance ratio.
+
+h3. *Big Data Services*
+
+*Google BigQuery*
+- BigQuery is Google’s fully managed, low-cost analytics data warehouse.
+
+*Google Cloud Dataproc*
+- It is a managed Spark and Hadoop service, and is used to easily process big datasets using the powerful and open tools in the Apache big data ecosystem.
+
+*Google Cloud Datalab*
+- Cloud Datalab is an interactive notebook to explore, collaborate, analyze and visualize data. 
+- It is integrated with BigQuery and Google Cloud Machine Learning to give you easy access to key data processing services.
+
+*Google Cloud Pub/Sub*
+- It is a serverless, large-scale, reliable, real-time messaging service that allows you to send and receive messages between independent applications.
+
+h3. *Machine Learning Services*
+
+*Cloud AutoML*
+- It is a suite of Machine Learning products that enables developers with limited machine learning expertise to train high-quality models by leveraging Google’s Neural Architecture Search technology.
+
+*Google Cloud TPU*
+- The Cloud TPUs are a family of hardware accelerators that Google designed and optimized specifically to speed up and scale up ML workloads for training and inference programmed with TensorFlow.
+
+*Google Cloud Machine Learning Engine*
+- The ML Engine makes it easy for you to build sophisticated, large-scale machine learning models that cover a broad set of scenarios from building sophisticated regression models to image classification.
+
+h3. *Identity and Security Services*
+- Identity and Security fall under one of the most important lists of Google Cloud Services, knowing that your data is safe and is encrypted.
+
+*Google Cloud Identity & Access Management*
+- The IAM lets administrators authorize who can take action on specific resources, giving you full control and visibility to manage cloud resources centrally.
+
+*Cloud Security Scanner*
+- It is a web security scanner for common vulnerabilities in App Engine applications, including cross-site-scripting (XSS), Flash injection, mixed content (HTTP in HTTPS), and insecure libraries.
+
+*Management and Developer Tools*
+- Moving on to our final set of Google Cloud Services, we have certain management tools. These tools are used to Monitor the Services, Find Errors, Debug them and Trace the Services.
+- The Stackdriver delivers real-time monitoring and logging across GCP, plus useful diagnostic tools.

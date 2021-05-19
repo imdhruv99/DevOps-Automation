@@ -1,0 +1,50 @@
+h2. Cloud Management Platform: OpenStack
+----
+- OpenStack is a cloud OS that is used to control the large pools of computing, storage, and networking resources within a data center. 
+- Open Stack is open-source and free software.
+
+h3. *Components of OpenStack*
+
+*Nova Compute*
+- Nova compute is a controller that is used to manage resources in virtualized environments. 
+- It handles several virtual machines and other instances that perform computing tasks.
+
+*Swift object storage*
+- Swift is used to store files, object, Backups, images, videos and other unstructured data.
+- Developers can use a special identifier for referring the file and objects in place of the path,  which directly points to a file and allows the OpenStack to manage where to store the files
+
+*Cinder Block Storage*
+- Cinder manages to add, remove, create new disk space in the server. This component provides the virtual storage for the virtual machines in the system.
+
+*Neutron Networking*
+- Neutron manages all the network-related queries, such as IP address management, routers, subnets, firewalls, VPNs, etc. 
+- It confirms that all the other components are well connected with the OpenStack.
+
+*Horizon Dashboard*
+- It is interface used to access backend services
+- Through APIs developers can access OpenStack's components.
+
+*Keystone Identity Service*
+- It is repository to store user and user related permissions. This component provide authentication and authorization services.
+
+*Glance Image Service*
+- It provides image service, means it provides virtual copy of Hard Disks.
+
+*Ceilometer Telemetry*
+- It is used to meter users usage report. It provides billing service.
+
+*Heat Orchestration*
+- This component organizes many complex applications of the cloud through the templates, via both the local OpenStack REST API and Query API.
+
+*Manila Shared File System*
+- It offers storage of the file to a virtual machine. This component gives an infrastructure for managing and provisioning file shares.
+
+*Sahara Elastic Map-reduce*
+- It offers simple method to the users to preplanned Hadoop clusters by referring to the multiple options such as the Hadoop version, cluster topology and hardware details of nodes and some more.
+
+h3. *OpenStack Workflow*
+- Horizon is an interface for the appliance environment. Anything that the user wants to do should use the Horizon. It is GUI with multiple modules.
+- All the action in OpenStack  executed by Service API Call. Each API call is first validated by Keystone, so user must have created it's account.
+- Once login successful, user can create new instances, volumes, Cinder, and configure the network.
+- Instance are nothing but VM, in this instances we can configure our cloud. Formation of Instance also is a API call.
+- We can access CLI of instance, configure the instance and also create network information.
