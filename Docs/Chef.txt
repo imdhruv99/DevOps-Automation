@@ -1,0 +1,89 @@
+h2. Configuration Management: Chef
+---- - Chef is a configuration management technology used to automate the infrastructure provisioning. It is developed on the basis of Ruby DSL language.
+ - It has the capability to get integrated with any of the cloud technology.
+ - Chef use to deploy and manage servers and applications in-house and on the cloud.
+
+h3. *Chef Architecture*
+ - Chef is the combination of Chef Server, Nodes and Work Station
+
+*Work Station:* Wright all the configuration files
+ *Chef Server:* Manages the nodes of infrastructure, Stores the configuration files
+ *Chef Client:* It is program runs on each nodes
+ *Knife:* It is command line tool runs on workstation
+ *CookBook:* It's files contains configuration for infrastructure
+h3. *Chef Workflow*
+ - Chef client periodically pulls chef server to see there are any changes in cookbooks or settings.
+ - If changes are there, chef server sends latest configuration to chef client, then chef client apply that configuration to nodes.
+ - Update cookbooks and settings are pushed to chef server from workstation by using knife.
+
+h3. *Knife command*
+ - Knife is Chef’s command-line tool to interact with the Chef server. One uses it for uploading cookbooks and managing other aspects of Chef.
+ - It help's managing Chef nodes, Cookbook, Recipe, Environments, Cloud Resources, Cloud Provisioning, Installation on Chef client on Chef nodes.
+
+h3. *Chef commands*
+
+1. Create Cookbook
+{code:java}
+knife cookbook create <name-of-cookbook>
+{code}
+2. Create cookbook with options
+{code:java}
+knife cookbook create <name-of-cookbook> -c <copyright holder name> -m <emailID> -I <license type> -r <format of doc>
+{code}
+ - -C is the copyright holder name. You can also use –copyright option.
+ - -m is the email address. You can also use –email option.
+ - -I is the license type. Ex: apachev2, gplv2, gplv3, mit
+ - -r option will define the format for the README files in this cookbook
+ - -o option will define the path where you want the cookbooks to be created.
+
+3. Upload CookBook to chef server
+{code:java}
+knife cookbook upload <name-of-cookbook>
+{code}
+ - -a use to upload all the cookbook to server.
+
+4. Lock a Cookbook from Future Edits
+ - --freeze will stop cookbook to be updated
+{code:java}
+knife cookbook upload <name-of-cookbook> --freeze
+{code}
+
+ - --force used to update cookbook which is lock
+{code:java}
+knife cookbook upload <name-of-cookbook> --force
+{code}
+
+5. Get a List of ALL Cookbooks
+{code:java}
+knife cookbook list
+{code}
+ - -a used to list with all versions of cookbook
+ - -aw will return cookbook version with urls.
+
+6. Delete a Single Cookbook
+{code:java}
+knife cookbook delete <name-of-cookbook>
+{code}
+ - -p option will delete the cookbook, and permanently purge the cookbook from the Chef server
+
+{code:java}
+knife cookbook bulk delete <regex>
+{code}
+ - bulk delete used to delete cookbooks in bulk
+
+7. Download Cookbook from Chef Server
+{code:java}
+knife cookbook download <name-of-cookbook> <version>
+{code}
+ - version is optional
+
+8. View Cookbook Details
+{code:java}
+knife cookbook show <name-of-cookbook> <version>
+{code}
+ - version is optional
+
+9. Validate Cookbook Syntax
+{code:java}
+knife cookbook test <name-of-cookbook>
+{code}

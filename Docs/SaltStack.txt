@@ -1,0 +1,74 @@
+h2. Configuration Management: SaltStack
+----
+- SaltStack is an open-source configuration management software and remote execution engine
+- While written in Python, The default configuration system is YAML and Jinja templates
+- Salt is based on the ZeroMQ library and it is an embeddable networking library. It is lightweight and a fast messaging library. 
+
+h3. *Salt Architecture*
+- The architecture of SaltStack is designed to work with any number of servers, from local network systems to other deployments across different data centers.
+
+*SaltMaster:* SaltMaster is used to send commands and configurations to the Salt slaves.
+
+*SaltMinions:* Salt minion receives commands and configuration from the SaltMaster.
+
+*Execution:* Modules and Adhoc commands executed from the command line against one or more minions. It performs Real-time Monitoring.
+
+*Formulas:* It can be used for tasks such as installing a package, configuring and starting a service, setting up users or permissions and many other common tasks
+
+*Grains:* Grains is an interface that provides information specific to a minion. Grains get loaded when the Salt minion starts.
+grains information could be about the running kernel or the operating system.
+
+*Pillar:* A pillar is an interface that generates and stores highly sensitive data specific to a particular minion, such as cryptographic keys and passwords. 
+It stores data in a key/value pair and the data is managed in a similar way as the Salt State Tree
+
+*Top File:* Matches Salt states and pillar data to Salt minions.
+
+*Runners:* It is a module located inside the SaltMaster and performs tasks such as job status, connection status, read data from external APIs, query connected salt minions and more.
+
+*Returners:* Returns data from Salt minions to another system.
+
+*Reactor:* It is responsible for triggering reactions when events occur in your SaltStack environment.
+
+*SaltCloud:* Salt Cloud provides a powerful interface to interact with cloud hosts.
+
+*SaltSSH:* Run Salt commands over SSH on systems without using Salt minion.
+
+h3. *Salt-Master Commands*
+
+1. List all minions keys
+{code:java}
+salt-key --list all
+{code}
+
+2. Accept and Delete all minions keys
+{code:java}
+salt-key -A
+{code}
+{code:java}
+salt-key -D
+{code}
+
+3. Ping all minions
+{code:java}
+salt '*' test.ping
+{code}
+
+4. Run grains on all minions for retrieve network interface
+{code:java}
+salt "*" grains.get 'hwaddr_interfaces'
+{code}
+
+5. Run grains on all minions for retrieve CPU model
+{code:java}
+salt "*" grains.get 'cpu_model'
+{code}
+
+6. Run OS command on minion
+{code:java}
+salt "*" cmd.run 'reboot'
+{code}
+
+7. Listing modules
+{code:java}
+salt-call sys.list_modules --out=json
+{code}
