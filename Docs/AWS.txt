@@ -1,0 +1,80 @@
+h2. Cloud Provider: Amazon Web services
+----
+
+- AWS is cloud computing platform provides IAAS, PAAS, SAAS.
+- AWS provides Services such as Compute, Container, Storage, Database, Security, Machine Learning, Managemnet, Game Developmnet, Satelite, BlockChain, Quantum Computing etc...
+
+Below listed services is used by me.
+
+*Amazon EC2*
+- It is a web service interface that provides resizable compute capacity in the AWS cloud. 
+- It is designed for developers to have complete control over web-scaling and computing resources.
+- We can limit number of access using SG group.
+
+*Auto Scaling*
+- Auto Scaling is particularly effective for those applications that fluctuate on hourly, daily, or weekly usage. 
+- Auto Scaling is enabled by Amazon CloudWatch and is available at no extra cost.
+
+*AWS CloudWatch*
+AWS CloudWatch can be used to measure CPU utilization, network traffic, etc.
+
+*Elastic Load Balancing*
+- Elastic Load Balancing (ELB) automatically distributes incoming request traffic across multiple Amazon EC2 instances and results in achieving higher fault tolerance.
+- It detects unfit instances and automatically reroutes traffic to fit instances until the unfit instances have been restored in a round-robin manner.
+
+*AWS Lambda*
+- AWS Lambda is a responsive cloud service that inspects actions within the application and responds by deploying the user-defined codes, known as functions. 
+- Lambda manages the compute fleet that offers a balance of memory, CPU, network, and other resources to run your code.
+- Lambda performs operational and administrative activities on your behalf, including managing capacity, monitoring, and logging your Lambda functions.
+
+*AWS VPC*
+- Amazon VPC is the networking layer for Amazon EC2.
+- Basic key concept of VPC, subnet, Route Table, Internet Gateway, VPC Endpoint, CIDR Block.
+
+*AWS Route 53*
+- Amazon Route 53 is a highly available and scalable Domain Name System web service. 
+- We can use Route 53 to perform three main functions in any combination: domain registration, DNS routing, and health checking.
+
+*AWS S3*
+- Amazon Simple Storage Service is storage for the Internet. AWS S3 uses bucket to store the data and data is stored as Objects in bucket.
+- A bucket is a container for objects stored in Amazon S3. A key is the unique identifier for an object within a bucket and Every object in a bucket has exactly one key.
+- AWS S# supports API access for Developers.
+
+*AWS S3 Glacier*
+- It is low-cost and used for data archiving and long-term backup.
+- An archive is any object, such as a photo, video, or document, that you store in a vault. It is a base unit of storage in Amazon S3 Glacier
+
+*AWS ECS*
+- Amazon Elastic Container Service is a highly scalable, fast container management service that makes it easy to run, stop, and manage containers on a cluster.
+- We can define container using task definition. Containers are typically build using docker or any other container services.
+- AWS Farget is serverless infrastructure to run container on server.
+- https://github.com/imdhruv99/AWS-CloudFormation-ECS-Fargate-Launch-Type
+- https://github.com/imdhruv99/AWS-CloudFormation-ECS-EC2-Launch-Type
+
+*AWS ECR*
+- Amazon Elastic Container Registry is an AWS managed container image registry service that is secure, scalable, and reliable.
+- Amazon ECR supports private container image repositories with resource-based permissions using AWS IAM.
+
+*AWS IAM*
+- AWS Identity and Access Management is a web service that helps you securely control access to AWS resources.
+- We can create permission and it's policies, users and user groups using IAM.
+- IAM also has API access for Developers.
+
+*Amazon Comprehend*
+- Amazon Comprehend uses natural language processing to extract insights about the content of documents. Amazon Comprehend processes any text file in UTF-8 format.
+- Amazon Comprehend also supports API access.
+- https://github.com/imdhruv99/AWS-ComprehendMedical-Java-Maven
+
+*Amazon Textract*
+- Amazon Textract makes it easy to add document text detection and analysis to your applications. 
+- The Amazon Textract Text Detection API can detect typed and handwritten text in a variety of documents including financial reports, medical records, and tax forms. 
+- For documents with structured data, you can use the Amazon Textract Document Analysis API to extract text, forms, and tables.
+- https://github.com/imdhruv99/AWS-Textract-JAVA
+
+*Amazon Athena*
+- It is analytic service. using this we can execute SQL queries directly on AWS S3.
+
+*AWS CloudFormation*
+- It is infrastructure as a code service specifically for AWS. It supports JSON and YAML both. We can create whole infra structure using CloudFormation.
+- https://github.com/imdhruv99/AWS-CloudFormation-ECS-Fargate-Launch-Type
+- https://github.com/imdhruv99/AWS-CloudFormation-ECS-EC2-Launch-Type
