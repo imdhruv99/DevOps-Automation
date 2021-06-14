@@ -1,7 +1,7 @@
 # DevOps-Automation
 ----
 
-### Tech Stack
+### Technology Stack
 - Programming Language: Go
 - Web Development Framework: Gin
 - Source Code Management Tool: GitHub
